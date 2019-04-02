@@ -11,7 +11,11 @@
         {
             "label": "Build Test Project",
             "type": "shell",
-            "command": "rm TestProject\\build\\ -r; mkdir TestProject\\build\\; gcc TestProject\\main.c -o TestProject\\build\\main.exe"
+            "command": ".\\checkmake.bat TestProject\\build\\; gcc TestProject\\main.c -o TestProject\\build\\main.exe",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
