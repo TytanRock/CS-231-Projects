@@ -20,11 +20,11 @@ int main (int argc, char **args)
     double priceOfUnitBottle;
     int numberOfBottles;
 
-    printf("The price of a bottle: ");
-    scanf("%Lf", &priceOfUnitBottle);
-    printf("Number of bottles you want to purchase: ");
+    printf("What is the price of a bottle?\n");
+    scanf("%lf", &priceOfUnitBottle);
+    printf("How many bottles do you want to purchase?\n");
     scanf("%d", &numberOfBottles);
 
-    printf("Total cost for %d bottles at %.2Lf is: %.2Lf\n", 
+    printf("Total cost for %d bottles at %.2Lf is: %.2lf\n", 
         numberOfBottles, priceOfUnitBottle, priceOfUnitBottle * numberOfBottles);
 }
