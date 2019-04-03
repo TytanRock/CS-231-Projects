@@ -16,6 +16,11 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Build Project 1",
+            "type": "shell",
+            "command": ".\\checkmake.bat _1PepsiProgram\\build\\; gcc _1PepsiProgram\\main.c -o _1PepsiProgram\\build\\pepsi.exe",
         }
     ]
 }
