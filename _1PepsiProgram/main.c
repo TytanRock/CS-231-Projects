@@ -14,17 +14,21 @@
  * these pepsis, and will be well formatted
  * and include the unit cost of and number
  * of bottles
+ * 
+ * Your name in a comment will be at the top of code.
+ * Your name will be printed when program is run.
  */
 int main (int argc, char **args)
 {
     double priceOfUnitBottle;
     int numberOfBottles;
 
+    printf("Author is Cory Ness\n");
     printf("What is the price of a bottle?\n");
     scanf("%lf", &priceOfUnitBottle);
     printf("How many bottles do you want to purchase?\n");
     scanf("%d", &numberOfBottles);
 
-    printf("Total cost for %d bottles at %.2Lf is: %.2lf\n", 
+    printf("Total cost for %d bottles at $%.2Lf is: $%.2lf\n", 
         numberOfBottles, priceOfUnitBottle, priceOfUnitBottle * numberOfBottles);
 }
