@@ -29,6 +29,6 @@ int main (int argc, char **args)
     printf("How many bottles do you want to purchase?\n");
     scanf("%d", &numberOfBottles);
 
-    printf("Total cost for %d bottles at $%.2Lf is: $%.2lf\n", 
+    printf("Total cost for %d bottles at $%.2lf is: $%.2lf\n", 
         numberOfBottles, priceOfUnitBottle, priceOfUnitBottle * numberOfBottles);
 }
