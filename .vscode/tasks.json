@@ -6,12 +6,12 @@
         {
             "label": "Clean all projects",
             "type": "shell",
-            "command": "rm TestProject\\build\\ -r"
+            "command": "rm _TestProject\\build\\ -r; rm _1PepsiProgram\\build\\ -r"
         },
         {
             "label": "Build Test Project",
             "type": "shell",
-            "command": ".\\checkmake.bat TestProject\\build\\; gcc TestProject\\main.c -o TestProject\\build\\main.exe",
+            "command": ".\\checkmake.bat _TestProject\\build\\; gcc _TestProject\\main.c -o _TestProject\\build\\main.exe",
             "group": {
                 "kind": "build",
                 "isDefault": true
