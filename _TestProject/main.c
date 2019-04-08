@@ -3,7 +3,7 @@
 
 int main (int argc, char ** args, char ** env)
 {
-    printf("Hello world\n");
-    printf("Environment Variables: %s\n", env[0]);
+    for(int i = 0;env[i]; ++i)
+       printf("Environment Variable %d: %s\n", i, env[i]);
     return 0;
 }
