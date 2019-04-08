@@ -6,21 +6,31 @@
         {
             "label": "Clean all projects",
             "type": "shell",
-            "command": "rm _TestProject\\build\\ -r; rm _1PepsiProgram\\build\\ -r"
+            "command": ".\\CleanAll"
         },
         {
             "label": "Build Test Project",
             "type": "shell",
-            "command": ".\\checkmake.bat _TestProject\\build\\; gcc _TestProject\\main.c -o _TestProject\\build\\main.exe",
+            "command": ".\\BuildApp _TestProject",
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
         },
         {
+            "label": "Run Test Project",
+            "type": "shell",
+            "command": ".\\RunApp _TestProject"
+        },
+        {
+            "label": "Build and Run Test Project",
+            "type": "shell",
+            "command": ".\\BuildApp _TestProject; .\\RunApp _TestProject"
+        },
+        {
             "label": "Build Project 1",
             "type": "shell",
-            "command": ".\\checkmake.bat _1PepsiProgram\\build\\; gcc _1PepsiProgram\\main.c -o _1PepsiProgram\\build\\pepsi.exe",
+            "command": ".\\BuildApp _1PepsiProgram",
         }
     ]
 }
