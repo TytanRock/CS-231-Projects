@@ -51,7 +51,7 @@ char ** GetUserInput()
             buf[count][CHAR_BUF_SIZE - 1] = '\0';
         }
         /* Always flush stdin after a newline */
-        fflush(stdin);
+        fseek(stdin, 0, SEEK_END);
         /* Valid string entered, let's increment count */
         ++count;
     }
