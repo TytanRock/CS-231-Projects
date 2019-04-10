@@ -39,6 +39,18 @@ char ** GetUserInput()
     printf("Enter up to %d lines of %d maximum characters\n", MAX_LINES, CHAR_BUF_SIZE - 1);
     while(fgets(buf[count], CHAR_BUF_SIZE, stdin) != NULL) /* This will break with ^z in windows, ^d in unix */
     {
+        /* 
+         * If the second to last character is not null or a newline,
+         * then there are more characters received than available
+         * It's time to flush the buffer and set the last chars to
+         * what we'd expect, truncating the input
+         */ 
+        if(buf[count][CHAR_BUF_SIZE - 2] != '\0' || buf[count][CHAR_BUF_SIZE - 2] != '\n')
+        {
+            fflush(stdin);
+            buf[count][CHAR_BUF_SIZE - 2] = '\n';
+            buf[count][CHAR_BUF_SIZE - 1] = '\0';
+        }
         /* Valid string entered, let's increment count */
         ++count;
     }
@@ -185,6 +197,6 @@ int main(int argc, char **args)
     }
     char * totalCountString = GetCharCountString(totalCharCount);
     printf("Total number of words are: %d\n", totalNumber);
-    printf("Total character count is:%s", totalCountString);
+    printf("Total character count is:%s\n", totalCountString);
     return 0;
 }
