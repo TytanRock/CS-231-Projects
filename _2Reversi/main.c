@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_LINES 100
 #define CHAR_BUF_SIZE 101 // !< 101 allows for strings of size 100
@@ -72,6 +73,44 @@ void ReverseWord(char * word, int len)
     free(tmpWord);
 }
 
+char * GetCharCountString(int * charCount)
+{
+    char * returnString = calloc(1000, sizeof(char));
+
+    for(int i = 0; i < 26; ++i)
+    {
+        /* Only add to string if we have a char */
+        if(charCount[i] != 0)
+        {
+            sprintf(returnString, "%s (%c:%d)", returnString, (char)(i+65), charCount[i]);
+        }
+    }
+    return returnString;
+}
+
+/*
+ * Process the line to get char count
+ * line - string to process
+ * Returns string with number of alphabetic chars
+ */
+char * ProcessChars(char * line, int * charCount)
+{
+    int stringLen = strlen(line);
+    for(int i = 0; i < stringLen; ++i)
+    {
+        if(isalpha(line[i]))
+        {
+            char val = line[i];
+            if(val > 90)
+                val -= 32; // !< ensures we have upper case letters
+            int index = (int)(val - 65);
+
+            charCount[index] += 1; 
+        }
+    }
+    return GetCharCountString(charCount);
+}
+
 /*
  * Processes a line at a time according to the program's spec
  * stringLine - String to process
@@ -94,9 +133,12 @@ void ProcessLine(char * stringLine, int * numberOfWords)
             /* We hit a space, let's reverse the word */
             ReverseWord(stringLine + lastWord, i - lastWord);
             lastWord = i + 1;
+
             /* Make sure we increment only if this followed a non-whitespace */
             if(i > 0 && stringLine[i-1] != ' ' && stringLine[i-1] != '\n' && stringLine[i-1] != '\t')
+            {
                 ++ (*numberOfWords); // Incrememnt number of words
+            }
         }
     }
 }
@@ -121,12 +163,28 @@ int main(int argc, char **args)
     /* Process the lines */
     int number;
     int totalNumber = 0;
+    int currentCharCount[26];
+    int totalCharCount[26];
+    memset(currentCharCount, 0, sizeof(int) * 26); // !< Sets all values to 0
+    memset(totalCharCount, 0, sizeof(int) * 26); // !< Sets all values to 0
     for(int i = 0; buf[i][0]; ++i)
     {
         ProcessLine(buf[i], &number);
+
+        char * charCountString = ProcessChars(buf[i], currentCharCount);
+        for(int i = 0; i < 26; ++i)
+        {
+            totalCharCount[i] += currentCharCount[i];
+            currentCharCount[i] = 0;
+        }
+
         printf("%d: %s - There are %d words\n", i, buf[i], number);
         totalNumber += number;
+        printf(" - Character Counts are:%s\n", charCountString);
+        free(charCountString);
     }
-    printf("Total number of words are: %d", totalNumber);
+    char * totalCountString = GetCharCountString(totalCharCount);
+    printf("Total number of words are: %d\n", totalNumber);
+    printf("Total character count is:%s", totalCountString);
     return 0;
 }
