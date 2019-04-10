@@ -19,6 +19,10 @@
 #define MAX_LINES 100
 #define CHAR_BUF_SIZE 101 // !< 101 allows for strings of size 100
 
+/*
+ * Function used to get user input
+ * Returns an array of c string (char arrays)
+ */
 char ** GetUserInput()
 {
     /* Dynamically allocate memory for user input */
@@ -37,26 +41,44 @@ char ** GetUserInput()
         /* Valid string entered, let's increment count */
         ++count;
     }
+    /* We've exited, let's add some newlines to clean up the terminal a bit */
+    printf("\n\n\n");
 
     /* We've read all the user input, let's return */
     return buf;
 }
 
+/*
+ * Used to reverse text up to specified length
+ * word - String to reverse
+ * len - Length to reverse word
+ * word WILL be modified
+ */
 void ReverseWord(char * word, int len)
 {
-    /* Just set each letter to the reversed position */
     char * tmpWord = calloc(len, sizeof(char)); // !< DYNAMICALLY ALLOCATED
+
+    /* Each consecutive character is the last consecutive character */
     for(int i = 0; i < len; ++i)
     {
         tmpWord[i] = word[len - i - 1];
     }
+    /* And then we set the original word to the reversed word */
     for(int i = 0; i < len; ++i)
     {
         word[i] = tmpWord[i];
     }
+    /* Free memory used by the temporary word */
     free(tmpWord);
 }
 
+/*
+ * Processes a line at a time according to the program's spec
+ * stringLine - String to process
+ * numberOfWords - sets the humber of words in this line
+ * stringLine WILL be modified
+ * numberOfWords WILL be modified
+ */
 void ProcessLine(char * stringLine, int * numberOfWords)
 {
     /* Initialize pointer to 0 */
@@ -76,6 +98,9 @@ void ProcessLine(char * stringLine, int * numberOfWords)
     }
 }
 
+/*
+ * Main Program
+ */
 int main(int argc, char **args)
 {
     /* Check if there's command line arguments */
@@ -85,8 +110,12 @@ int main(int argc, char **args)
         printf("This does not support command line arguments");
         return 0;
     }
+
+    /* Create variable to keep track of user input */
     char ** buf;
     buf = GetUserInput();
+
+    /* Process the lines */
     int number;
     int totalNumber = 0;
     for(int i = 0; buf[i][0]; ++i)
