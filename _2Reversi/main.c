@@ -88,12 +88,15 @@ void ProcessLine(char * stringLine, int * numberOfWords)
     int lastWord = 0;
     for(int i = 0; i < stringLength; ++i)
     {
-        if(stringLine[i] == ' ' || stringLine[i] == '\n')
+        /* Whitespace is a space, newline, or a tab */
+        if(stringLine[i] == ' ' || stringLine[i] == '\n' || stringLine[i] == '\t')
         {
             /* We hit a space, let's reverse the word */
             ReverseWord(stringLine + lastWord, i - lastWord);
             lastWord = i + 1;
-            ++ (*numberOfWords); // Incrememnt number of words
+            /* Make sure we increment only if this followed a non-whitespace */
+            if(i > 0 && stringLine[i-1] != ' ' && stringLine[i-1] != '\n' && stringLine[i-1] != '\t')
+                ++ (*numberOfWords); // Incrememnt number of words
         }
     }
 }
@@ -121,7 +124,7 @@ int main(int argc, char **args)
     for(int i = 0; buf[i][0]; ++i)
     {
         ProcessLine(buf[i], &number);
-        printf("%s - There are %d words in the previous line\n", buf[i], number);
+        printf("%d: %s - There are %d words\n", i, buf[i], number);
         totalNumber += number;
     }
     printf("Total number of words are: %d", totalNumber);
