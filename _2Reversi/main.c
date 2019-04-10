@@ -47,10 +47,11 @@ char ** GetUserInput()
          */ 
         if(buf[count][CHAR_BUF_SIZE - 2] != '\0' || buf[count][CHAR_BUF_SIZE - 2] != '\n')
         {
-            fflush(stdin);
             buf[count][CHAR_BUF_SIZE - 2] = '\n';
             buf[count][CHAR_BUF_SIZE - 1] = '\0';
         }
+        /* Always flush stdin after a newline */
+        fflush(stdin);
         /* Valid string entered, let's increment count */
         ++count;
     }
