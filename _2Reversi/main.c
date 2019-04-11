@@ -45,13 +45,14 @@ char ** GetUserInput()
          * It's time to flush the buffer and set the last chars to
          * what we'd expect, truncating the input
          */ 
-        if(buf[count][CHAR_BUF_SIZE - 2] != '\0' || buf[count][CHAR_BUF_SIZE - 2] != '\n')
+        if(buf[count][CHAR_BUF_SIZE - 2] != '\0' && buf[count][CHAR_BUF_SIZE - 2] != '\n')
         {
+            char tmp[CHAR_BUF_SIZE];
+            while(!strstr(tmp, "\n")) fgets(tmp, CHAR_BUF_SIZE, stdin); // Keep getting until we reach the newline
+
             buf[count][CHAR_BUF_SIZE - 2] = '\n';
             buf[count][CHAR_BUF_SIZE - 1] = '\0';
         }
-        /* Always flush stdin after a newline */
-        fseek(stdin, 0, SEEK_END);
         /* Valid string entered, let's increment count */
         ++count;
     }
