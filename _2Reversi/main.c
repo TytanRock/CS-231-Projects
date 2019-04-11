@@ -19,6 +19,7 @@
 
 #define MAX_LINES 100
 #define CHAR_BUF_SIZE 101 // !< 101 allows for strings of size 100
+#define CHARS_IN_ALPHABET 26
 
 /*
  * Function used to get user input
@@ -55,6 +56,13 @@ char ** GetUserInput()
         }
         /* Valid string entered, let's increment count */
         ++count;
+        if(count >= MAX_LINES)
+        {
+            /* We're beyond the maximum number of lines, tell user */
+            printf("Reached 100 lines, ending\n");
+            getchar();
+            break;
+        }
     }
     /* We've exited, let's add some newlines to clean up the terminal a bit */
     printf("\n------------INPUT------------\n");
@@ -97,7 +105,7 @@ char * GetCharCountString(int * charCount)
 {
     char * returnString = calloc(1000, sizeof(char));
 
-    for(int i = 0; i < 26; ++i)
+    for(int i = 0; i < CHARS_IN_ALPHABET; ++i)
     {
         /* Only add to string if we have a char */
         if(charCount[i] != 0)
@@ -183,16 +191,16 @@ int main(int argc, char **args)
     /* Process the lines */
     int number;
     int totalNumber = 0;
-    int currentCharCount[26];
-    int totalCharCount[26];
-    memset(currentCharCount, 0, sizeof(int) * 26); // !< Sets all values to 0
-    memset(totalCharCount, 0, sizeof(int) * 26); // !< Sets all values to 0
-    for(int i = 0; userInput[i][0]; ++i)
+    int currentCharCount[CHARS_IN_ALPHABET];
+    int totalCharCount[CHARS_IN_ALPHABET];
+    memset(currentCharCount, 0, sizeof(int) * CHARS_IN_ALPHABET); // !< Sets all values to 0
+    memset(totalCharCount, 0, sizeof(int) * CHARS_IN_ALPHABET); // !< Sets all values to 0
+    for(int i = 0; i < MAX_LINES && userInput[i][0]; ++i)
     {
         ProcessLine(userInput[i], &number);
 
         char * charCountString = ProcessChars(userInput[i], currentCharCount);
-        for(int i = 0; i < 26; ++i)
+        for(int i = 0; i < CHARS_IN_ALPHABET; ++i)
         {
             totalCharCount[i] += currentCharCount[i];
             currentCharCount[i] = 0;
