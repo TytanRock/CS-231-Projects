@@ -148,7 +148,7 @@ void ProcessLine(char * stringLine, int * numberOfWords)
     for(int i = 0; i < stringLength; ++i)
     {
         /* Whitespace is a space, newline, or a tab */
-        if(stringLine[i] == ' ' || stringLine[i] == '\n' || stringLine[i] == '\t')
+        if(stringLine[i] == ' ' || stringLine[i] == '\n' || stringLine[i] == '\t' || stringLine[i] == 4)
         {
             /* We hit a space, let's reverse the word */
             ReverseWord(stringLine + lastWord, i - lastWord);
