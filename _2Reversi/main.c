@@ -27,17 +27,17 @@
 char ** GetUserInput()
 {
     /* Dynamically allocate memory for user input */
-    char ** buf = malloc(sizeof(char *) * MAX_LINES);
-    /* Set everything in buf to nul */
+    char ** userInput = malloc(sizeof(char *) * MAX_LINES);
+    /* Set everything in userInput to nul */
     for(int i = 0; i < MAX_LINES; ++i)
     {
-        buf[i] = calloc(CHAR_BUF_SIZE, sizeof(char));
+        userInput[i] = calloc(CHAR_BUF_SIZE, sizeof(char));
     }
-    /* Create counter to keep track of where in the buf we're at */
+    /* Create counter to keep track of where in the userInput we're at */
     int count = 0;
 
     printf("Enter up to %d lines of %d maximum characters\n", MAX_LINES, CHAR_BUF_SIZE - 1);
-    while(fgets(buf[count], CHAR_BUF_SIZE, stdin) != NULL) /* This will break with ^z in windows, ^d in unix */
+    while(fgets(userInput[count], CHAR_BUF_SIZE, stdin) != NULL) /* This will break with ^z in windows, ^d in unix */
     {
         /* 
          * If the second to last character is not null or a newline,
@@ -45,13 +45,13 @@ char ** GetUserInput()
          * It's time to flush the buffer and set the last chars to
          * what we'd expect, truncating the input
          */ 
-        if(buf[count][CHAR_BUF_SIZE - 2] != '\0' && buf[count][CHAR_BUF_SIZE - 2] != '\n')
+        if(userInput[count][CHAR_BUF_SIZE - 2] != '\0' && userInput[count][CHAR_BUF_SIZE - 2] != '\n')
         {
             char tmp[CHAR_BUF_SIZE];
             while(!strstr(tmp, "\n")) fgets(tmp, CHAR_BUF_SIZE, stdin); // Keep getting until we reach the newline
 
-            buf[count][CHAR_BUF_SIZE - 2] = '\n';
-            buf[count][CHAR_BUF_SIZE - 1] = '\0';
+            userInput[count][CHAR_BUF_SIZE - 2] = '\n';
+            userInput[count][CHAR_BUF_SIZE - 1] = '\0';
         }
         /* Valid string entered, let's increment count */
         ++count;
@@ -61,12 +61,12 @@ char ** GetUserInput()
     /* Print what the user entered in to make sure everyone knows what's going on */
     for(int i = 0; i < count; ++i)
     {
-        printf("%s", buf[i]);
+        printf("%s", userInput[i]);
     }
     /* Add a newline to make it a bit nicer */
     printf("------------OUTPUT------------\n");
     /* We've read all the user input, let's return */
-    return buf;
+    return userInput;
 }
 
 /*
@@ -177,8 +177,8 @@ int main(int argc, char **args)
     }
 
     /* Create variable to keep track of user input */
-    char ** buf;
-    buf = GetUserInput();
+    char ** userInput;
+    userInput = GetUserInput();
 
     /* Process the lines */
     int number;
@@ -187,18 +187,18 @@ int main(int argc, char **args)
     int totalCharCount[26];
     memset(currentCharCount, 0, sizeof(int) * 26); // !< Sets all values to 0
     memset(totalCharCount, 0, sizeof(int) * 26); // !< Sets all values to 0
-    for(int i = 0; buf[i][0]; ++i)
+    for(int i = 0; userInput[i][0]; ++i)
     {
-        ProcessLine(buf[i], &number);
+        ProcessLine(userInput[i], &number);
 
-        char * charCountString = ProcessChars(buf[i], currentCharCount);
+        char * charCountString = ProcessChars(userInput[i], currentCharCount);
         for(int i = 0; i < 26; ++i)
         {
             totalCharCount[i] += currentCharCount[i];
             currentCharCount[i] = 0;
         }
 
-        printf("%d: %s - There are %d words\n", i+1, buf[i], number);
+        printf("%d: %s - There are %d words\n", i+1, userInput[i], number);
         totalNumber += number;
         printf(" - Character Counts are:%s\n", charCountString);
         free(charCountString);
