@@ -123,9 +123,9 @@ char * ProcessChars(char * line, int * charCount)
             char val = line[i];
             if(val > 90)
                 val -= 32; // !< ensures we have upper case letters
-            int index = (int)(val - 65);
+            int index = (int)(val - 65); // !< Index is char value offset by 65
 
-            charCount[index] += 1; 
+            charCount[index] += 1;
         }
     }
     return GetCharCountString(charCount);
