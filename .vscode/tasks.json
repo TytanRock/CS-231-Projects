@@ -33,9 +33,14 @@
             "command": ".\\BuildApp _1PepsiProgram",
         },
         {
-            "label": "Build & Run Project 2",
+            "label": "Build Project 2",
             "type": "shell",
-            "command": ".\\BuildApp _2Reversi; .\\RunApp _2Reversi",
+            "command": ".\\BuildApp _2Reversi",
+        },
+        {
+            "label": "Run Project 2",
+            "type": "shell",
+            "command": ".\\RunApp _2Reversi",
         }
     ]
 }
