@@ -57,14 +57,14 @@ char ** GetUserInput()
         ++count;
     }
     /* We've exited, let's add some newlines to clean up the terminal a bit */
-    printf("\n---------------------------\n\n");
+    printf("\n------------INPUT------------\n");
     /* Print what the user entered in to make sure everyone knows what's going on */
     for(int i = 0; i < count; ++i)
     {
         printf("%s", buf[i]);
     }
     /* Add a newline to make it a bit nicer */
-    printf("-------------------------------\n");
+    printf("------------OUTPUT------------\n");
     /* We've read all the user input, let's return */
     return buf;
 }
