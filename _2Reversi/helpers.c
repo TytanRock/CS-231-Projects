@@ -2,7 +2,8 @@
 
 /*
  * Function used to get user input
- * Returns an array of c string (char arrays)
+ * Returns a DYANMICALLY CREATED array of c string (char arrays) containing user input
+ * CALLER HAS RESPONSIBILITY TO FREE RETURN WHEN FINISHED WITH STRING ARRAY
  */
 char ** GetUserInput()
 {
@@ -38,8 +39,8 @@ char ** GetUserInput()
         if(count >= MAX_LINES)
         {
             /* We're beyond the maximum number of lines, tell user */
-            printf("Reached 100 lines, ending\n");
-            getchar();
+            printf("Reached 100 lines, ending.\nPress any character to Continue.\n");
+            getchar(); // !< Pause for user input
             break;
         }
     }
@@ -81,8 +82,13 @@ void ReverseString(char * word, int len)
 }
 
 /*
- * Converts int of each character count into a string to read
- * Returns string representation of integer array of character count
+ * Converts int array containing character counts to a string representing it
+ *   charCount - Integer array containing count of each character 
+ *     MUST BE AT LEAST AS LARGE AS 26 (the number of characters in the alphabet) 
+ * Returns integer array in a readable (string) format
+ * 
+ * RETURN STRING IS DYNAMICALLY CREATED.
+ * CALLER HAS RESPONSIBILITY TO FREE STRING WHEN FINISHED
  */
 char * GetCharCountString(const int * charCount)
 {
@@ -101,10 +107,10 @@ char * GetCharCountString(const int * charCount)
 
 /*
  * Process the line to get char count
- * line - string to process
+ *   line - string to process
  * Returns string with number of alphabetic chars
  */
-char * ProcessChars(char * line, int * charCount)
+char * ProcessChars(const char * line, int * charCount)
 {
     int stringLen = strlen(line);
     for(int i = 0; i < stringLen; ++i)
@@ -123,9 +129,11 @@ char * ProcessChars(char * line, int * charCount)
 }
 
 /*
- * Processes a line at a time according to the program's spec
- * stringLine - String to process
- * numberOfWords - sets the humber of words in this line
+ * Processes a line at a time according to program spec
+ * Reverses each word in stringLine
+ * For each word in the line, it will incrememnt numberOfWords
+ *   stringLine - String to process
+ *   numberOfWords - sets the humber of words in this line
  * stringLine WILL be modified
  * numberOfWords WILL be modified
  */
