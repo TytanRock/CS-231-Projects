@@ -19,6 +19,8 @@
  */
 int main(int argc, char **args)
 {
+    printf("Author is Cory Ness\n");
+    printf("Date authored is 4/10/2019\n");
     /* Check if there's command line arguments */
     if(argc > 1)
     {
