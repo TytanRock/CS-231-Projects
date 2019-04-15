@@ -11,10 +11,16 @@
  */
 
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define FLAG_b(val) val |= 2
 #define FLAG_n(val) val |= 1
 #define FLAG_E(val) val |= 1
+
+#define USING_b (_appVariables.lineNumberState & 2)
+#define USING_n (_appVariables.lineNumberState & 1)
+#define USING_E (_appVariables.endLineState & 1)
 
 struct 
 {
@@ -22,6 +28,7 @@ struct
     int lineNumberState; // !< First bit is -E
     int filesToKat; // !< Number of files we need to Kat
     char ** fileNames; // !< Array of strings containing Kat files
+    int runningLineCount;
 }_appVariables;
 
 /**
@@ -51,11 +58,53 @@ void ProcessArgument(char *arg)
         /* Incrememnt files to Kat */
         ++_appVariables.filesToKat;
     }
-    
+}
+
+int PrintFile(char * fileName)
+{
+    FILE * file = fopen(fileName, "r");
+
+    if(file == NULL) return -1; /* Return error, because file couldn't open */
+
+    char *currentLine;
+    size_t len;
+    while(getline(&currentLine, &len, file) != -1)
+    {
+        if(USING_b)
+        {
+            /* Check if this is an empty line */
+            if(strlen(currentLine) > 1)
+            {
+                printf("\t%d ", _appVariables.runningLineCount++);
+            }
+        }
+        else if(USING_n)
+        {
+            printf("\t%d ", _appVariables.runningLineCount++);
+        }
+        /* Remove the newline at the end of the line */
+        char charToCheck = currentLine[strlen(currentLine)-1];
+        if(charToCheck == '\n') currentLine[strlen(currentLine)-1] = '\0'; 
+        /* Print the line */
+        printf("%s", currentLine);
+        /* Add a $ if using E */
+        if(USING_E)
+        {
+            printf("$");
+        }
+        /* Add newline if it existed before*/
+        if(charToCheck == '\n')
+            printf("\n");
+    }
+
+    fclose(file);
+
+    return 0;
 }
 
 int main(int argc, char ** args)
 {
+    _appVariables.runningLineCount = 1;
     /* Max number of filenames is argc - 1 */
     _appVariables.fileNames = malloc(sizeof(char *) * (argc - 1));
 
@@ -65,5 +114,13 @@ int main(int argc, char ** args)
         ProcessArgument(args[i]);
     }
 
-    
+    for(int i = 0; i < _appVariables.filesToKat; ++i)
+    {
+        PrintFile(_appVariables.fileNames[i]);
+    }
+
+    if(_appVariables.filesToKat == 0)
+    {
+
+    }
 }

@@ -41,6 +41,11 @@
             "label": "Run Project 2",
             "type": "shell",
             "command": ".\\RunApp _2Reversi",
+        },
+        {
+            "label": "Build Project 3",
+            "type": "shell",
+            "command": ".\\BuildApp _3Kat",
         }
     ]
 }
