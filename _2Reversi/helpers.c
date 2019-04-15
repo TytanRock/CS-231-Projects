@@ -3,6 +3,7 @@
 /*
  * Function used to get user input
  * Returns a DYANMICALLY CREATED array of c string (char arrays) containing user input
+ * 
  * CALLER HAS RESPONSIBILITY TO FREE RETURN WHEN FINISHED WITH STRING ARRAY
  */
 char ** GetUserInput()
@@ -109,6 +110,9 @@ char * GetCharCountString(const int * charCount)
  * Process the line to get char count
  *   line - string to process
  * Returns string with number of alphabetic chars
+ * 
+ * RETURN IS DYNAMICALLY CREATED, 
+ * CALLER HAS RESPONSIBILITY TO FREE MEMORY
  */
 char * ProcessChars(const char * line, int * charCount)
 {
