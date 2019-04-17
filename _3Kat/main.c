@@ -22,7 +22,7 @@
 #define USING_n (_appVariables.lineNumberState & 1)
 #define USING_E (_appVariables.endLineState & 1)
 
-struct 
+struct
 {
     int endLineState; // !< Second bit is -b, first bit is -n
     int lineNumberState; // !< First bit is -E
@@ -48,6 +48,11 @@ void ProcessArgument(char *arg)
             if(arg[i] == 'b') FLAG_b(_appVariables.lineNumberState);
             if(arg[i] == 'n') FLAG_n(_appVariables.lineNumberState);
             if(arg[i] == 'E') FLAG_E(_appVariables.endLineState);
+        }
+        if(arg[1] == '\0')
+        {
+            _appVariables.fileNames[_appVariables.filesToKat] = "\0";
+            ++_appVariables.filesToKat;
         }
     }
     else
@@ -91,7 +96,11 @@ void PrintLine(char * currentLine)
 
 int PrintFile(char * fileName)
 {
-    FILE * file = fopen(fileName, "r");
+    FILE * file;
+    if(fileName[0] == '\0')
+        file = stdin;
+    else
+        file = fopen(fileName, "r");
 
     if(file == NULL) return -1; /* Return error, because file couldn't open */
 
