@@ -72,12 +72,12 @@ void PrintLine(char * currentLine)
             /* Check if this is an empty line */
             if(strlen(currentLine) > 1)
             {
-                printf("\t%d ", _appVariables.runningLineCount++);
+                printf("%6d  ", _appVariables.runningLineCount++);
             }
         }
         else if(USING_n)
         {
-            printf("\t%d ", _appVariables.runningLineCount++);
+            printf("%6d  ", _appVariables.runningLineCount++);
         }
         /* Remove the newline at the end of the line */
         char charToCheck = currentLine[strlen(currentLine)-1];
