@@ -29,6 +29,8 @@ struct
     int filesToKat; // !< Number of files we need to Kat
     char ** fileNames; // !< Array of strings containing Kat files
     int runningLineCount;
+
+    int newLined; // !< Bool used to determine if we've passed a newline
 }_appVariables;
 
 /**
@@ -71,6 +73,8 @@ void ProcessArgument(char *arg)
  */
 void PrintLine(char * currentLine)
 {
+    if(_appVariables.newLined)
+    {
         if(USING_b)
         {
             /* Check if this is an empty line */
@@ -83,19 +87,24 @@ void PrintLine(char * currentLine)
         {
             printf("%6d  ", _appVariables.runningLineCount++);
         }
-        /* Remove the newline at the end of the line */
-        char charToCheck = currentLine[strlen(currentLine)-1];
-        if(charToCheck == '\n') currentLine[strlen(currentLine)-1] = '\0'; 
-        /* Print the line */
-        printf("%s", currentLine);
-        /* Add a $ if using E */
-        if(USING_E && charToCheck == '\n')
-        {
-            printf("$");
-        }
-        /* Add newline if it existed before*/
-        if(charToCheck == '\n')
-            printf("\n");
+        _appVariables.newLined = 0;
+    }
+    /* Remove the newline at the end of the line */
+    char charToCheck = currentLine[strlen(currentLine)-1];
+    if(charToCheck == '\n') currentLine[strlen(currentLine)-1] = '\0'; 
+    /* Print the line */
+    printf("%s", currentLine);
+    /* Add a $ if using E */
+    if(USING_E && charToCheck == '\n')
+    {
+        printf("$");
+    }
+    /* Add newline if it existed before*/
+    if(charToCheck == '\n')
+    {
+        printf("\n");
+        _appVariables.newLined = 1;
+    }
 }
 
 /**
@@ -135,6 +144,7 @@ int main(int argc, char ** args)
     /* Initialize command state variables */
     _appVariables.runningLineCount = 1;
     _appVariables.filesToKat = 0;
+    _appVariables.newLined = 1;
 
     /* Max number of filenames is argc - 1 */
     _appVariables.fileNames = malloc(sizeof(char *) * (argc - 1));
