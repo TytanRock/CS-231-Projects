@@ -130,8 +130,10 @@ int PrintFile(char * fileName)
         PrintLine(currentLine);
     }
 
-    /* Always close the file when finished */
-    fclose(file);
+    if(fileName[0] != '\0')
+        fclose(file); // !< If we used an open file, we need to close it
+    else
+        clearerr(stdin); // !< If we used stdin, we need to clear the error
 
     return 0;
 }
@@ -158,7 +160,10 @@ int main(int argc, char ** args)
     /* For every file we need to print, print it */
     for(int i = 0; i < _appVariables.filesToKat; ++i)
     {
-        PrintFile(_appVariables.fileNames[i]);
+        if(PrintFile(_appVariables.fileNames[i]) == -1)
+        {
+            fprintf(stderr, "kat: %s: No such file\n", _appVariables.fileNames[i]);
+        }
     }
 
     /* If there are not files to print, than prompt user instead */
