@@ -8,20 +8,25 @@
  * - n: Write the line number before each line
  * - b: Same as n, but does not add line numbers to empty lines
  * If -b and -n are added, b is used
+ * 
+ * Program allows multiple file names, and multiple user-inputs designated with '-'
  */
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <string.h> // !< strlen
+#include <stdio.h>  // !< printf, fprintf, FILE, fopen, fclose, fgets
+#include <stdlib.h> // !< malloc
 
+/* Macros to set flags a little easier */
 #define FLAG_b(val) val |= 2
 #define FLAG_n(val) val |= 1
 #define FLAG_E(val) val |= 1
 
+/* Macros to read flags a little easier */
 #define USING_b (_appVariables.lineNumberState & 2)
 #define USING_n (_appVariables.lineNumberState & 1)
 #define USING_E (_appVariables.endLineState & 1)
 
+/* Keep a struct containing command state variables */
 struct
 {
     int endLineState; // !< Second bit is -b, first bit is -n
@@ -31,7 +36,7 @@ struct
     int runningLineCount;
 
     int newLined; // !< Bool used to determine if we've passed a newline
-}_appVariables;
+}_appVariables; /* Name it _appVariables */
 
 /**
  * Processes the specified argument, modifying state variables
@@ -44,13 +49,14 @@ void ProcessArgument(char *arg)
 
     if(arg[0] == '-')
     {
-        /* This is a flag, we will modify the endline/linenumber state variables */
+        /* Treat it as a flag, we will modify the endline/linenumber state variables */
         for(int i = 1; arg[i]; ++i)
         {
             if(arg[i] == 'b') FLAG_b(_appVariables.lineNumberState);
             if(arg[i] == 'n') FLAG_n(_appVariables.lineNumberState);
             if(arg[i] == 'E') FLAG_E(_appVariables.endLineState);
         }
+        /* If flag has no arguments, it's actually user input designator */
         if(arg[1] == '\0')
         {
             _appVariables.fileNames[_appVariables.filesToKat] = "\0";
@@ -73,6 +79,7 @@ void ProcessArgument(char *arg)
  */
 void PrintLine(char * currentLine)
 {
+    /* If we've new-line'd, then we can add line numbers */
     if(_appVariables.newLined)
     {
         if(USING_b)
@@ -87,6 +94,7 @@ void PrintLine(char * currentLine)
         {
             printf("%6d  ", _appVariables.runningLineCount++);
         }
+        /* Make sure we clear new-line'd, so that we don't write a ton of line numbers */
         _appVariables.newLined = 0;
     }
     /* Remove the newline at the end of the line */
@@ -94,7 +102,7 @@ void PrintLine(char * currentLine)
     if(charToCheck == '\n') currentLine[strlen(currentLine)-1] = '\0'; 
     /* Print the line */
     printf("%s", currentLine);
-    /* Add a $ if using E */
+    /* Add a $ if using E & we reached end of line */
     if(USING_E && charToCheck == '\n')
     {
         printf("$");
@@ -127,7 +135,7 @@ int PrintFile(char * fileName)
     currentLine[100] = '\0'; /* Ensure last character is always null-terminated */
     while(fgets(currentLine, 100, file))
     {
-        PrintLine(currentLine);
+        PrintLine(currentLine); /* Print every line in file */
     }
 
     if(fileName[0] != '\0')
@@ -160,6 +168,7 @@ int main(int argc, char ** args)
     /* For every file we need to print, print it */
     for(int i = 0; i < _appVariables.filesToKat; ++i)
     {
+        /* If we couldn't open the file, tell user in stderr */
         if(PrintFile(_appVariables.fileNames[i]) == -1)
         {
             fprintf(stderr, "kat: %s: No such file\n", _appVariables.fileNames[i]);
@@ -169,6 +178,6 @@ int main(int argc, char ** args)
     /* If there are not files to print, than prompt user instead */
     if(_appVariables.filesToKat == 0)
     {
-        PrintFile("\0");
+        PrintFile("\0"); // !< Passing "\0" tells PrintFile to prompt user
     }
 }
