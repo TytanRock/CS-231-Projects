@@ -60,16 +60,8 @@ void ProcessArgument(char *arg)
     }
 }
 
-int PrintFile(char * fileName)
+void PrintLine(char * currentLine)
 {
-    FILE * file = fopen(fileName, "r");
-
-    if(file == NULL) return -1; /* Return error, because file couldn't open */
-
-    char *currentLine;
-    size_t len;
-    while(getline(&currentLine, &len, file) != -1)
-    {
         if(USING_b)
         {
             /* Check if this is an empty line */
@@ -88,13 +80,26 @@ int PrintFile(char * fileName)
         /* Print the line */
         printf("%s", currentLine);
         /* Add a $ if using E */
-        if(USING_E)
+        if(USING_E && charToCheck == '\n')
         {
             printf("$");
         }
         /* Add newline if it existed before*/
         if(charToCheck == '\n')
             printf("\n");
+}
+
+int PrintFile(char * fileName)
+{
+    FILE * file = fopen(fileName, "r");
+
+    if(file == NULL) return -1; /* Return error, because file couldn't open */
+
+    char *currentLine;
+    size_t len;
+    while(getline(&currentLine, &len, file) != -1)
+    {
+        PrintLine(currentLine);
     }
 
     fclose(file);
@@ -121,6 +126,11 @@ int main(int argc, char ** args)
 
     if(_appVariables.filesToKat == 0)
     {
-
+        char charBuffer[101];
+        charBuffer[100] = '\0';
+        while(fgets(charBuffer, 100, stdin))
+        {
+            PrintLine(charBuffer);
+        }
     }
 }
