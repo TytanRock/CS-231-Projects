@@ -95,9 +95,9 @@ int PrintFile(char * fileName)
 
     if(file == NULL) return -1; /* Return error, because file couldn't open */
 
-    char *currentLine;
-    size_t len;
-    while(getline(&currentLine, &len, file) != -1)
+    char currentLine[101];
+    currentLine[100] = '\0';
+    while(fgets(currentLine, 100, file))
     {
         PrintLine(currentLine);
     }
@@ -110,6 +110,7 @@ int PrintFile(char * fileName)
 int main(int argc, char ** args)
 {
     _appVariables.runningLineCount = 1;
+    _appVariables.filesToKat = 0;
     /* Max number of filenames is argc - 1 */
     _appVariables.fileNames = malloc(sizeof(char *) * (argc - 1));
 
