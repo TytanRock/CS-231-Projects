@@ -65,6 +65,10 @@ void ProcessArgument(char *arg)
     }
 }
 
+/**
+ * Prints the specified line using command arguments
+ * - currentLine: String to print
+ */
 void PrintLine(char * currentLine)
 {
         if(USING_b)
@@ -94,53 +98,62 @@ void PrintLine(char * currentLine)
             printf("\n");
 }
 
+/**
+ * Prints the file using the command arguments
+ * - fileName: Name of file to open (\0 if prompting user input)
+ * returns 0 if opened file succesfully, else -1 if error occured
+ */
 int PrintFile(char * fileName)
 {
     FILE * file;
+    /* If first character is null, than use stdin instead of a file */
     if(fileName[0] == '\0')
         file = stdin;
     else
-        file = fopen(fileName, "r");
+        file = fopen(fileName, "r"); /* Open file in readonly */
 
     if(file == NULL) return -1; /* Return error, because file couldn't open */
 
     char currentLine[101];
-    currentLine[100] = '\0';
+    currentLine[100] = '\0'; /* Ensure last character is always null-terminated */
     while(fgets(currentLine, 100, file))
     {
         PrintLine(currentLine);
     }
 
+    /* Always close the file when finished */
     fclose(file);
 
     return 0;
 }
 
+/**
+ * Main program, pass command-line arguments into here
+ */
 int main(int argc, char ** args)
 {
+    /* Initialize command state variables */
     _appVariables.runningLineCount = 1;
     _appVariables.filesToKat = 0;
+
     /* Max number of filenames is argc - 1 */
     _appVariables.fileNames = malloc(sizeof(char *) * (argc - 1));
 
+    /* Process every argument */
     for(int i = 1; i < argc; ++i)
     {
-        /* Process every argument passed down */
         ProcessArgument(args[i]);
     }
 
+    /* For every file we need to print, print it */
     for(int i = 0; i < _appVariables.filesToKat; ++i)
     {
         PrintFile(_appVariables.fileNames[i]);
     }
 
+    /* If there are not files to print, than prompt user instead */
     if(_appVariables.filesToKat == 0)
     {
-        char charBuffer[101];
-        charBuffer[100] = '\0';
-        while(fgets(charBuffer, 100, stdin))
-        {
-            PrintLine(charBuffer);
-        }
+        PrintFile("\0");
     }
 }
