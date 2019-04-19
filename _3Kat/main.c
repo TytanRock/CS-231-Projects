@@ -87,12 +87,12 @@ void PrintLine(char * currentLine)
             /* Check if this is an empty line */
             if(strlen(currentLine) > 1)
             {
-                printf("%6d  ", _appVariables.runningLineCount++);
+                printf("%6d\t", _appVariables.runningLineCount++);
             }
         }
         else if(USING_n)
         {
-            printf("%6d  ", _appVariables.runningLineCount++);
+            printf("%6d\t", _appVariables.runningLineCount++);
         }
         /* Make sure we clear new-line'd, so that we don't write a ton of line numbers */
         _appVariables.newLined = 0;
