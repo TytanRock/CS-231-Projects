@@ -2,3 +2,5 @@
 *.exe
 *.ipch
 *.bin
+*.hi
+*.o
