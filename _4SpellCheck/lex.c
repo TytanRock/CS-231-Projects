@@ -15,6 +15,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
+
+static int MyStringCompare(const void *a, const void *b)
+{
+    return strcmp(*(const char **)a, *(const char **)b);
+}
 
 int main(int argc, char ** args)
 {
@@ -43,22 +49,29 @@ int main(int argc, char ** args)
     /* Read the file and break it into words */
     while(fscanf(file, "%s", words[currentWord]) != EOF) 
     {
+        /* Check every char, if it's not alphabetic, rescan */
         for(int i = 0; words[currentWord][i]; ++i)
         {
             if(!isalpha(words[currentWord][i]))
                 goto endOfLoop;
         }
+        /* If we've gone past our currentWordCap, reallocate memory to increase cap */
         ++currentWord;
         if(currentWord >= currentWordCap)
         {
             currentWordCap *= 2;
             realloc(words, sizeof(char *) * currentWordCap);
         }
+        /* calloc space for the string */
         words[currentWord] = calloc(MAX_WORD_LENGTH, sizeof(char));
 
         endOfLoop: ;
     }
 
+    /* Sort the strings */
+    qsort(words, currentWord - 1, sizeof(char *), MyStringCompare);
+
+    /* Print them to stdout */
     for(int i = 0; words[i][0]; ++i)
     {
         printf("%s\n", words[i]);
