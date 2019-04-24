@@ -66,7 +66,7 @@ int main(int argc, char ** args)
         fclose(file);
 
     /* Print them to stdout */
-    for(int i = 0; words[i][0]; ++i)
+    for(int i = 0; i < currentWord; ++i)
     {
         printf("%s\n", words[i]);
     }
