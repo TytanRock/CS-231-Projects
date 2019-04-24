@@ -1,6 +1,8 @@
 
 #define MAX_WORD_LENGTH 100
 
+#define DEBUG 0
+
 #include <stdio.h> 
 #include <string.h>
 #include <stdlib.h> 
@@ -44,9 +46,11 @@ int main(int argc, char ** args)
         /* Open a FILE from the pipe in order to use fgets */
         FILE * lexOutput = fdopen(link[0], "r");
 
+#if DEBUG == 1
         /* While we don't have an error from fgets, repeat what was outputted */
         while(fgets(word, MAX_WORD_LENGTH, lexOutput))
             printf("Out: %s", word);
+#endif
 
         /* Done with pipe, close input pipe */
         close(link[0]);
@@ -54,4 +58,11 @@ int main(int argc, char ** args)
         /* Wait until child dies */
         waitpid(pid, NULL, 0);
     }
+
+    /* Now, fork another process and call sort on it */
+
+    /* Now, fork another process and call uniq on it */
+
+    /* Now, fork another process and call compare on it */
+    
 }
