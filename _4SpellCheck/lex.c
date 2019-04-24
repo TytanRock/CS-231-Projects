@@ -17,11 +17,6 @@
 #include <ctype.h>
 #include <string.h>
 
-static int MyStringCompare(const void *a, const void *b)
-{
-    return strcmp(*(const char **)a, *(const char **)b);
-}
-
 int main(int argc, char ** args)
 {
     /* Check for too few arguments */
@@ -67,9 +62,8 @@ int main(int argc, char ** args)
 
         endOfLoop: ;
     }
-
-    /* Sort the strings */
-    qsort(words, currentWord - 1, sizeof(char *), MyStringCompare);
+    if(file != stdin)
+        fclose(file);
 
     /* Print them to stdout */
     for(int i = 0; words[i][0]; ++i)
