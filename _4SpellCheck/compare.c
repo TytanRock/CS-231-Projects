@@ -35,9 +35,9 @@ int compareStrings(char * file1String, char * file2String)
 
 int main(int argc, char ** args)
 {
-    if(argc < 3)
+    if(argc != 3)
     {
-        fprintf(stderr, "Too few arguments, specify 2 arguments\n");
+        fprintf(stderr, "Please specify 2 files to compare against, or \"-\" and a file\n");
         return -1;
     }
 
@@ -61,11 +61,11 @@ int main(int argc, char ** args)
                             dictionaryBuf);
         if(foundCompare)
         {
-            fprintf(stdout, "%s is spelled correctly\n", strtok(userBuf, "\n"));
+            fprintf(stdout, "%s:\tSpelled Correctly\n", strtok(userBuf, "\n"));
         }
         else
         {
-            fprintf(stdout, "%s is misspelled\n", strtok(userBuf, "\n"));
+            fprintf(stdout, "%s:\tMisspelled\n", strtok(userBuf, "\n"));
         }        
     }
     if(_commandStates.userInput != stdin)

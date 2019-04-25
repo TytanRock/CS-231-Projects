@@ -15,6 +15,11 @@
 
 int main(int argc, char ** args)
 {
+    if(argc != 3)
+    {
+        fprintf(stderr, "Please specify two files as command line arguments");
+    }
+
     /* Keep track of the pipes between spellcheck and lex */
     int lexLink[2];
 
@@ -96,7 +101,7 @@ int main(int argc, char ** args)
     pipe(uniqLink);
     int uniqPid = fork();
 
-    char * uniqArgs[] = {"uniq", NULL};
+    char * uniqArgs[] = {"uniq", "-i", NULL}; /* -i flag to ignore case */
 
     /* If fork ID is 0, this is child process */
     if(uniqPid == 0)
@@ -131,7 +136,7 @@ int main(int argc, char ** args)
     pipe(compareLink);
     int comparePid = fork();
 
-    char *compareArgs[] = {"./compare.out", "-", "diction.txt", NULL};
+    char *compareArgs[] = {"./compare.out", "-", args[2], NULL};
 
     /* If PID is 0, this is the child proces */
     if(comparePid == 0)
@@ -156,8 +161,18 @@ int main(int argc, char ** args)
         close(uniqLink[0]);
         close(compareLink[1]);
 
-        //waitpid(comparePid, NULL, 0);
+        waitpid(comparePid, NULL, 0);
     }
 
-    DEBUG_PIPE(compareLink[0]);
+    /* Now open pipe as a file and report to user */
+    FILE * compareOutput = fdopen(compareLink[0], "r");
+    
+    char charBuf[MAX_WORD_LENGTH];
+    while(fgets(charBuf, MAX_WORD_LENGTH, compareOutput))
+    {
+        /* Print everything as is, newline and all */
+        printf("%s", charBuf);
+    }
+    
+    close(compareLink[0]);
 }
