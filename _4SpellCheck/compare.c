@@ -26,8 +26,8 @@ int compareStrings(char * file1String, char * file2String)
     if(compareState == 0) return 1;
     else if(compareState > 0) 
     {
-        fgets(file2String, MAX_WORD_LENGTH, _commandStates.dictionary);
-        if(file2String)
+        char * ret = fgets(file2String, MAX_WORD_LENGTH, _commandStates.dictionary);
+        if(ret)
             return compareStrings(file1String, file2String);
     }
     return 0;
@@ -61,11 +61,11 @@ int main(int argc, char ** args)
                             dictionaryBuf);
         if(foundCompare)
         {
-            printf("%s is spelled correctly\n", userBuf);
+            fprintf(stdout, "%s is spelled correctly\n", userBuf);
         }
         else
         {
-            printf("%s is misspelled\n", userBuf);
+            fprintf(stdout, "%s is misspelled\n", userBuf);
         }        
     }
     if(_commandStates.userInput != stdin)

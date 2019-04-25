@@ -2,10 +2,9 @@
 #define MAX_WORD_LENGTH 100
 
 #define DEBUG_PIPE(val)     FILE * file = fdopen(val, "r"); \
-                            /* Stack allocate a buffer for reading from lex.out */ \
                             char word[MAX_WORD_LENGTH]; \
                             while(fgets(word, MAX_WORD_LENGTH, file)) \
-                                printf("out: %s", word);
+                                fprintf(stderr, "out: %s", word);
                             
 
 #include <stdio.h> 
@@ -157,8 +156,8 @@ int main(int argc, char ** args)
         close(uniqLink[0]);
         close(compareLink[1]);
 
-        DEBUG_PIPE(compareLink[0]);
-
-        waitpid(comparePid, NULL, 0);
+        //waitpid(comparePid, NULL, 0);
     }
+
+    DEBUG_PIPE(compareLink[0]);
 }
