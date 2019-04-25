@@ -61,11 +61,11 @@ int main(int argc, char ** args)
                             dictionaryBuf);
         if(foundCompare)
         {
-            fprintf(stdout, "%s is spelled correctly\n", userBuf);
+            fprintf(stdout, "%s is spelled correctly\n", strtok(userBuf, "\n"));
         }
         else
         {
-            fprintf(stdout, "%s is misspelled\n", userBuf);
+            fprintf(stdout, "%s is misspelled\n", strtok(userBuf, "\n"));
         }        
     }
     if(_commandStates.userInput != stdin)
