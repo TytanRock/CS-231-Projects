@@ -46,6 +46,11 @@
             "label": "Build Project 3",
             "type": "shell",
             "command": ".\\BuildApp _3Kat",
+        },
+        {
+            "label": "Build Project 5 name",
+            "type": "shell",
+            "command": ".\\BuildHaskell _5HaskellTests name.hs"
         }
     ]
 }
