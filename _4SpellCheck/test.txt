@@ -1,8 +1,1 @@
-Hello this is A word Word test
-Some more words are being wroten
-Let's see if any of these are actually misspelled
-
-
-any othe rthings i can try to MisPSell
-would be spretty helpful
-coolness
+this is a very1long word34that will3be used to3test6if3the3buffer3cap3is2enough3for43lex.c4and3amazingness`non'characters-are2handled'correctly
