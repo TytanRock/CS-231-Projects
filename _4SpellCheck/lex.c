@@ -41,37 +41,50 @@ int main(int argc, char ** args)
     char ** words = malloc(sizeof(char *) * currentWordCap);
     words[currentWord] = calloc(MAX_WORD_LENGTH, sizeof(char));
 
+    char buf[MAX_WORD_LENGTH];
+    int beginningOfWord = 0;
+
     /* Read the file and break it into words */
-    while(fscanf(file, "%s", words[currentWord]) != EOF) 
+    while(fgets(buf, MAX_WORD_LENGTH, file)) 
     {
-        /* Check every char, if it's not alphabetic, rescan */
-        for(int i = 0; words[currentWord][i]; ++i)
+        /* Check every char, if it's not alphabetic, split */
+        for(int i = 0; buf[i]; ++i)
         {
-            if(!isalpha(words[currentWord][i]))
-                goto endOfLoop;
-        }
-        /* If we've gone past our currentWordCap, reallocate memory to increase cap */
-        ++currentWord;
-        if(currentWord >= currentWordCap)
-        {
-            currentWordCap *= 2;
-            if(realloc(words, sizeof(char *) * currentWordCap) == NULL)
+            if(!isalpha(buf[i]))
             {
-                /* Something wrong happened, tell user and leave */
-                fprintf(stderr, "Realloc failed\n");
+                if(isalpha(buf[i-1]))
+                {
+                    /* Assign what we've encountered so far to the array location */
+                    buf[i] = '\0';
+                    strcat(words[currentWord], buf + beginningOfWord);
+
+                    /* If we've gone past our currentWordCap, reallocate memory to increase cap */
+                    ++currentWord;
+                    if(currentWord >= currentWordCap)
+                    {
+                        currentWordCap *= 2;
+                        if(realloc(words, sizeof(char *) * currentWordCap) == NULL)
+                        {
+                            /* Something wrong happened, tell user and leave */
+                            fprintf(stderr, "Realloc failed\n");
+                        }
+                    }
+                    /* calloc space for the string */
+                    words[currentWord] = calloc(MAX_WORD_LENGTH, sizeof(char));
+                }
+                beginningOfWord = i + 1;
             }
         }
-        /* calloc space for the string */
-        words[currentWord] = calloc(MAX_WORD_LENGTH, sizeof(char));
-
-        endOfLoop: ;
+        strcpy(words[currentWord], buf + beginningOfWord);
+        beginningOfWord = 0;
     }
     if(file != stdin)
         fclose(file);
 
     /* Print them to stdout */
-    for(int i = 0; i < currentWord; ++i)
+    for(int i = 0; i < currentWord + 1; ++i)
     {
-        printf("%s\n", words[i]);
+        if(words[i][0] != '\0')
+            printf("%s\n", words[i]);
     }
 }
