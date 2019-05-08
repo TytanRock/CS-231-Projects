@@ -9,7 +9,10 @@ if NOT EXIST %1\bin\ (
     mkdir %1\bin\
     echo Making Bin Directory
 )
-ghc --make %1\%2 -outputdir %1\bin\ -o %1\build\main.exe
+
+cd %1
+
+ghc --make %2 -outputdir bin\ -o build\main.exe
 
 if %ERRORLEVEL% NEQ 0 (
     echo Build Errors detected 
