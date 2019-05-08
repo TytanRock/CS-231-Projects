@@ -10,14 +10,13 @@ holdMeeting a =
     nums = words a
     min = read (nums !! 0)::Int
     delay = read (nums !! 1)::Int
-    total = determineGood delay (drop 2 nums)
+    total = determineGood delay (map read (drop 2 nums))
 
 -- Function used to calculate the number of people available for the meeting
-determineGood :: Int -> [String] -> Int
+determineGood :: Int -> [Int] -> Int
 determineGood _ [] = 0 -- If list is empty, return 0
-determineGood delay (a:as) = do
-    let next = read a::Int
+determineGood delay (a:as)
     -- If next index is good, return 1 plus everything after index
-    if next <= delay then 1 + determineGood delay as
+    | a <= delay = 1 + determineGood delay as
     -- Otherwise return everything after index
-    else determineGood delay as
+    | otherwise = determineGood delay as
