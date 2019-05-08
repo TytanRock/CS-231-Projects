@@ -48,9 +48,14 @@
             "command": ".\\BuildApp _3Kat",
         },
         {
-            "label": "Build Project 5 name",
+            "label": "Build Project 5",
             "type": "shell",
             "command": ".\\BuildHaskell _5HaskellTests name.hs"
+        },
+        {
+            "label": "Build Project 6",
+            "type": "shell",
+            "command": ".\\BuildHaskell _6Committee Main.hs"
         }
     ]
 }
