@@ -84,6 +84,7 @@ int main(int argc, char ** args)
     /* Print them to stdout */
     for(int i = 0; i < currentWord + 1; ++i)
     {
-        printf("%s\n", words[i]);
+        if(words[i][0] != '\0')
+            printf("%s\n", words[i]);
     }
 }
