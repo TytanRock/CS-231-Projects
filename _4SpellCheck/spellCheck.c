@@ -5,11 +5,11 @@
                             char word[MAX_WORD_LENGTH]; \
                             while(fgets(word, MAX_WORD_LENGTH, file)) \
                                 fprintf(stderr, "out: %s", word);
-                            
 
-#include <stdio.h> 
+
+#include <stdio.h>
 #include <string.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 
@@ -27,7 +27,7 @@ void ForkProcessWithPipe(int * pipes, int * previousPipe, char * args[])
         /* Duplicate previous output into this stdin */
         if(previousPipe != NULL)
             dup2(previousPipe[0], STDIN_FILENO);
-        /* Duplicate this write pipe into stdout */ 
+        /* Duplicate this write pipe into stdout */
         dup2(pipes[1], STDOUT_FILENO);
         /* Close unused pipes */
         if(previousPipe != NULL)
@@ -49,7 +49,7 @@ void ForkProcessWithPipe(int * pipes, int * previousPipe, char * args[])
         /* Wait until sort process is done */
         waitpid(pid, NULL, 0);
 
-        fprintf(logFile, "Process ID %d exited\n", pid);
+        fprintf(logFile, "Process ID %d and name %s exited\n", pid, args[0]);
     }
 }
 
@@ -85,7 +85,7 @@ int main(int argc, char ** args)
     char * sortArgs[] = {"sort", NULL};
 
     ForkProcessWithPipe(sortLink, lexLink, sortArgs);
-    
+
 
     /**
      * sortLink[0] is NOT closed yet!, be sure to close sortLink[0]
