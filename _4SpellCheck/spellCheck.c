@@ -47,8 +47,7 @@ void ForkProcessWithPipe(int * pipes, int * previousPipe, char * args[])
         int execReturn = execvp(args[0], args);
         if(execReturn < 0)
         {
-            fprintf(stderr, "Exec failed! Error code is: \n\
-            Check there exists \"%s\" in your directory", execReturn, args[0]);
+            fprintf(stderr, "Exec failed! Error code is: %d\nCheck there exists \"%s\" in your directory\n", execReturn, args[0]);
         }
 
         exit(EXIT_SUCCESS);
