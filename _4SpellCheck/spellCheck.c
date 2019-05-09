@@ -17,8 +17,18 @@ FILE * logFile;
 
 void ForkProcessWithPipe(int * pipes, int * previousPipe, char * args[])
 {
+    if(pipe(pipes) < 0)
+    {
+        /* If pipe return is less than 0, the pipe failed */
+        fprintf(stderr, "Pipe Failed!\n");
+    }
     int pid = fork();
-
+    /* If pid is less than 0, the fork failed */
+    if(pid < 0)
+    {
+        fprintf(stderr, "Fork failed! Error code: %d\n", pid);
+        return;
+    }
     /* If it's 0, this is the child process */
     if(pid == 0)
     {
@@ -34,7 +44,12 @@ void ForkProcessWithPipe(int * pipes, int * previousPipe, char * args[])
             close(previousPipe[0]);
         close(pipes[1]);
 
-        execvp(args[0], args);
+        int execReturn = execvp(args[0], args);
+        if(execReturn < 0)
+        {
+            fprintf(stderr, "Exec failed! Error code is: \n\
+            Check there exists \"%s\" in your directory", execReturn, args[0]);
+        }
 
         exit(EXIT_SUCCESS);
     }
@@ -62,47 +77,26 @@ int main(int argc, char ** args)
 
     logFile = fopen("spellcheck.log", "w");
 
-    /* Keep track of the pipes between spellcheck and lex */
+    /* Fork process to call lex on specified file */
     int lexLink[2];
-
-    /* Create arguments to be passed into lex.out */
     char * lexArgs[] = {"./lex.out", args[1], NULL};
-
-    /* Don't bother checking returns */
-    /* TODO: Bother checking returns for failure */
-    pipe(lexLink);
 
     ForkProcessWithPipe(lexLink, NULL, lexArgs);
 
-    /**
-     * lexLink[0] is NOT closed yet
-     * It is used in sort, so use it in sort then close it
-     */
-
     /* Now, fork another process and call sort on it */
     int sortLink[2];
-    pipe(sortLink);
     char * sortArgs[] = {"sort", NULL};
 
     ForkProcessWithPipe(sortLink, lexLink, sortArgs);
 
-
-    /**
-     * sortLink[0] is NOT closed yet!, be sure to close sortLink[0]
-     */
     /* Now, fork another process and call uniq on it */
     int uniqLink[2];
-    pipe(uniqLink);
     char * uniqArgs[] = {"uniq", "-i", NULL}; /* -i flag to ignore case */
     
     ForkProcessWithPipe(uniqLink, sortLink, uniqArgs);
     
-    /**
-     * uniqLink[0] is NOT CLOSED yet, close it
-     */
     /* Now, fork another process and call compare on it */
     int compareLink[2];
-    pipe(compareLink);
     char *compareArgs[] = {"./compare.out", "-", args[2], NULL};
 
     ForkProcessWithPipe(compareLink, uniqLink, compareArgs);
