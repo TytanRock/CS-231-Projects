@@ -1,0 +1,5 @@
+this is a very1long word34that will3be used to3test6if3the3buffer3cap3is2enough3for43lex.c4and3amazingness`non'characters-are2handled'correctly
+another thing
+
+
+some more lines
