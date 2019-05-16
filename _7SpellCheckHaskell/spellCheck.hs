@@ -33,8 +33,8 @@ processWords str = sortBy (caseInsensitiveOrdering) (removeLikeWords $ getWords 
 checkSpelling :: [String] -> [String] -> [String]
 checkSpelling [] _ = []
 checkSpelling (str:strs) dic
-    | elem (map toLower str) (map (map toLower) dic) = (str ++ " is correctly spelled") : checkSpelling strs dic
-    | otherwise = (str ++ " is not correctly spelled") : checkSpelling strs dic
+    | elem (map toLower str) (map (map toLower) dic) = (str ++ ":\tcorrect") : checkSpelling strs dic
+    | otherwise = (str ++ ":\tnot correct") : checkSpelling strs dic
 
 main = do
     [dictionaryFile, inFile, outFile] <- getArgs
@@ -46,13 +46,11 @@ main = do
     dicFileContents <- hGetContents dictionaryHandle
 
     let allWords = processWords inFileContents
-    let spellCheckedWords = checkSpelling allWords $ processWords dicFileContents
+    let spellCheckedWords = checkSpelling allWords $ words dicFileContents
     
     hPutStrLn outFileHandle $ unlines spellCheckedWords
 
     hClose dictionaryHandle
     hClose inFileHandle
     hClose outFileHandle
-
-    putStrLn "done"
     
