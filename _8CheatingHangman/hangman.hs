@@ -1,5 +1,7 @@
 module Main where
 import Data.Char
+import Data.List
+import Data.Maybe
 import System.Directory
 import System.Environment
 import System.IO
@@ -53,9 +55,39 @@ findPatternMatches :: [String] -> String -> Char -> Int
 findPatternMatches [] _ _ = 0
 findPatternMatches (a:as) pattern charLess = (findSinglePattern a pattern charLess) + findPatternMatches as pattern charLess
 
--- Dictionary List -> Character Asked -> Current Word -> ProposedWord -> Word Length -> (New Word, Words Left)
-cheatAtHangman :: [String] -> Char -> String -> String -> Int -> (String, Int)
-cheatAtHangman dictionary charAsked currentWord proposedWord wordLength = ("no", 0)
+-- Replaces just the first instance of the character
+replaceFirstChar :: String -> Char -> String
+replaceFirstChar [] _ = ""
+replaceFirstChar (a:as) chr
+    | a == '_' = chr : as
+    | otherwise = a : replaceFirstChar as chr
+
+replaceAllChar :: String -> Char -> String
+replaceAllChar [] _ = ""
+replaceAllChar (a:as) chr
+    | a == '*' = chr : replaceAllChar as chr
+    | otherwise = a : replaceAllChar as chr
+
+-- Find all patterns
+findPatterns :: String -> Char -> [String]
+findPatterns str chr
+    | elem '_' str = (findPatterns (replaceFirstChar str chr) chr) ++ (findPatterns (replaceFirstChar str '*') chr)
+    | otherwise = [str]
+
+-- Cheat at hangman
+-- Dictionary, Current Word, Specified Char, (New word, Words left)
+cheatAtHangman :: [String] -> String -> Char -> (String, Int)
+cheatAtHangman dictionary currentWord specifiedChar = (maximumGroupWord, maxGroup) where
+    -- Find every possibility
+    allPossibilities = [replaceAllChar x '_' | x <- (findPatterns currentWord specifiedChar)]
+    -- Find the number of pattern matches for each possibility
+    patternMatches = [findPatternMatches dictionary x specifiedChar | x <- allPossibilities ]
+    -- Find the maximum item
+    maxGroup = maximum patternMatches
+    -- Find its index
+    maxIndex = fromMaybe 0 $ findIndex (==maxGroup) patternMatches
+    -- Find the word
+    maximumGroupWord = allPossibilities !! maxIndex
 
 -- Main Program
 main = do
