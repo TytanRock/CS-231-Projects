@@ -56,6 +56,16 @@
             "label": "Build Project 6",
             "type": "shell",
             "command": ".\\BuildHaskell _6Committee Main.hs"
+        },
+        {
+            "label": "Build Project 7",
+            "type": "shell",
+            "command": ".\\BuildHaskell _7SpellCheckHaskell spellCheck.hs"
+        },
+        {
+            "label": "Build Project 8",
+            "type": "shell",
+            "command": ".\\BuildHaskell _8CheatingHangman hangman.hs"
         }
     ]
 }
