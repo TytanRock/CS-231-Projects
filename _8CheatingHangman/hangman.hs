@@ -38,6 +38,25 @@ checkGuessCount n
     | n > 10 = 10
     | otherwise = n
 
+-- Finds the number of occurences where the pattern matches
+findSinglePattern :: String -> String -> Char -> Int
+findSinglePattern [] [] _ = 1
+findSinglePattern [] _  _ = 0
+findSinglePattern _ [] _ = 0
+findSinglePattern (dict:dicts) (ptrn:ptrns) charLess
+    | dict == charLess && ptrn /= charLess = 0
+    | ptrn == '_' = findSinglePattern dicts ptrns charLess
+    | dict == ptrn = findSinglePattern dicts ptrns charLess
+    | otherwise = 0
+
+findPatternMatches :: [String] -> String -> Char -> Int
+findPatternMatches [] _ _ = 0
+findPatternMatches (a:as) pattern charLess = (findSinglePattern a pattern charLess) + findPatternMatches as pattern charLess
+
+-- Dictionary List -> Character Asked -> Current Word -> ProposedWord -> Word Length -> (New Word, Words Left)
+cheatAtHangman :: [String] -> Char -> String -> String -> Int -> (String, Int)
+cheatAtHangman dictionary charAsked currentWord proposedWord wordLength = ("no", 0)
+
 -- Main Program
 main = do
     commandArguments <- getArgs
@@ -64,9 +83,11 @@ main = do
     -- Get the contents of the dictionary
     dictionaryHandle <- openFile fileName ReadMode
     dictionaryWords <- hGetContents dictionaryHandle
+    -- We're using the dictionary words as a list of words, so let's make a variable for it
+    let dictionaryList = words dictionaryWords
 
     -- Check all words in dictionary to ensure there are words of correct length
-    if elem wordLength $ map length $ words dictionaryWords then
+    if elem wordLength $ map length dictionaryList  then
         -- There exists at least one word with the specied length
         return ()
     else do
