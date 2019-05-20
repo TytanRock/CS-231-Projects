@@ -89,6 +89,46 @@ cheatAtHangman dictionary currentWord specifiedChar = (maximumGroupWord, maxGrou
     -- Find the word
     maximumGroupWord = allPossibilities !! maxIndex
 
+processUserInput :: [String] -> String -> Int -> Bool -> Char -> IO ()
+processUserInput dictionary currentWord guesses debug letter = do
+    let (nextWord, nextGroup) = cheatAtHangman dictionary currentWord letter
+    if elem '_' nextWord then
+        return ()
+    else do
+        putStrLn $ "You solved it! The word is: " ++ nextWord
+        exitSuccess
+    
+    let nextGuesses = do
+        if nextWord == currentWord then
+            guesses - 1
+        else
+            guesses
+    
+    if nextGuesses == 0 then do
+        putStrLn "You're out of guesses!"
+        exitSuccess
+    else
+        return ()
+    
+    putStrLn $ "You have " ++ (show nextGuesses) ++ " guesses left"
+
+    putStrLn $ "Current word is: " ++ nextWord
+
+    if debug then
+        putStrLn $ "DEBUG: There are " ++ (show nextGroup) ++ " words left that fit"
+    else
+        return ()
+    
+    putStrLn "Your next input is?"
+    nextChar <- getLine
+
+    processUserInput dictionary nextWord nextGuesses debug (nextChar !! 0)
+
+initializeWord :: Int -> String
+initializeWord a
+    | a == 0 = ""
+    | otherwise = "_" ++ initializeWord (a - 1)
+
 -- Main Program
 main = do
     commandArguments <- getArgs
@@ -135,5 +175,11 @@ main = do
         putStrLn "Oh ho Ho! You're using the debug function!"
     else
         return ()
+
+    let startWord = (initializeWord wordLength)
+    putStrLn $ "The word is: " ++ startWord
+    putStrLn "what is your first guess?"
+    guessedChar <- getLine
+    processUserInput dictionaryList startWord guesses debug (guessedChar !! 0)
 
     putStrLn "Done"
