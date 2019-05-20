@@ -7,15 +7,21 @@ import System.IO
 -- Split the string based on non-alphabetic characters
 getWords :: String -> [String]
 getWords [] = [] -- Empty string returns empty string
-getWords [a] = [[a]] -- String of only one character returns list of that character as a string
+getWords [a]
+    | isAlpha a = [[a]] -- String of only one character returns list of that character as a string
+    | otherwise = [""]
 getWords (a:b:abs) -- All else will run through the algorithm
     | not $ isAlpha a = getWords (b:abs) -- If the first character is not alphabetic, get the remainder
     | otherwise = do
         if isAlpha b then do -- If the second character is alphabetic, continue the string
             let remainder = getWords (b : abs)
             [a : (remainder !! 0)] ++ tail remainder
-        else
-            [[a]] ++ getWords abs -- Otherwise split the string
+        else do
+            let next = getWords abs -- Otherwise split the string
+            if next == [""] then
+                [[a]]
+            else
+                [[a]] ++ next
 
 -- Removes duplicate words
 removeLikeWords :: [String] -> [String]
