@@ -63,11 +63,17 @@ int main(int argc, char ** args)
                     if(currentWord >= currentWordCap)
                     {
                         currentWordCap *= 2;
-                        if(realloc(words, sizeof(char *) * currentWordCap) == NULL)
+                        char ** tmp = realloc(words, sizeof(char *) * currentWordCap); 
+                        if(tmp == NULL)
                         {
                             /* Something wrong happened, tell user and leave */
                             fprintf(stderr, "Realloc failed\n");
                         }
+                        else
+                        {
+                            words = tmp;
+                        }
+                        
                     }
                     /* calloc space for the string */
                     words[currentWord] = calloc(MAX_WORD_LENGTH, sizeof(char));
