@@ -41,19 +41,21 @@ checkGuessCount n
     | otherwise = n
 
 -- Finds the number of occurences where the pattern matches
-findSinglePattern :: String -> String -> Char -> Int
-findSinglePattern [] [] _ = 1
-findSinglePattern [] _  _ = 0
-findSinglePattern _ [] _ = 0
-findSinglePattern (dict:dicts) (ptrn:ptrns) charLess
+findSinglePattern :: String -> String -> Char -> [Char] -> Int
+findSinglePattern [] [] _ _ = 1
+findSinglePattern [] _  _ _ = 0
+findSinglePattern _ [] _ _ = 0
+findSinglePattern (dict:dicts) (ptrn:ptrns) charLess usedChars
+    | elem dict usedChars && ptrn /= dict = 0 -- If the pattern contains a used char, ignore it
     | dict == charLess && ptrn /= charLess = 0
-    | ptrn == '_' = findSinglePattern dicts ptrns charLess
-    | dict == ptrn = findSinglePattern dicts ptrns charLess
+    | ptrn == '_' = findSinglePattern dicts ptrns charLess usedChars
+    | dict == ptrn = findSinglePattern dicts ptrns charLess usedChars
     | otherwise = 0
 
-findPatternMatches :: [String] -> String -> Char -> Int
-findPatternMatches [] _ _ = 0
-findPatternMatches (a:as) pattern charLess = (findSinglePattern a pattern charLess) + findPatternMatches as pattern charLess
+findPatternMatches :: [String] -> String -> Char -> [Char] -> Int
+findPatternMatches [] _ _ _ = 0
+findPatternMatches (a:as) pattern charLess usedChars = 
+    (findSinglePattern a pattern charLess usedChars) + findPatternMatches as pattern charLess usedChars
 
 -- Replaces just the first instance of the character
 replaceFirstChar :: String -> Char -> String
@@ -74,14 +76,29 @@ findPatterns str chr
     | elem '_' str = (findPatterns (replaceFirstChar str chr) chr) ++ (findPatterns (replaceFirstChar str '*') chr)
     | otherwise = [str]
 
+{-
+cleanPatterns :: [String] -> [Char] -> [String]
+cleanPatterns arr [] = arr
+cleanPatterns [] _ = []
+cleanPatterns (str:strs) chars
+    | ifExists str chars = cleanPatterns strs chars
+    | otherwise = str : (cleanPatterns strs chars)
+-}
+
+ifExists :: String -> [Char] -> Bool
+ifExists _ [] = False
+ifExists str (a:as) 
+    | elem a str = True
+    | otherwise = ifExists str as
+
 -- Cheat at hangman
--- Dictionary, Current Word, Specified Char, (New word, Words left)
-cheatAtHangman :: [String] -> String -> Char -> (String, Int)
-cheatAtHangman dictionary currentWord specifiedChar = (maximumGroupWord, maxGroup) where
+-- Dictionary, Used Characters Current Word, Specified Char, (New word, Words left)
+cheatAtHangman :: [String] -> [Char] -> String -> Char -> (String, Int)
+cheatAtHangman dictionary usedChars currentWord specifiedChar = (maximumGroupWord, maxGroup) where
     -- Find every possibility
-    allPossibilities = [replaceAllChar x '_' | x <- (findPatterns currentWord specifiedChar)]
+    allPossibilities = [replaceAllChar x '_' | x <- findPatterns currentWord specifiedChar]
     -- Find the number of pattern matches for each possibility
-    patternMatches = [findPatternMatches dictionary x specifiedChar | x <- allPossibilities ]
+    patternMatches = [findPatternMatches dictionary x specifiedChar usedChars | x <- allPossibilities ]
     -- Find the maximum item
     maxGroup = maximum patternMatches
     -- Find its index
@@ -89,15 +106,20 @@ cheatAtHangman dictionary currentWord specifiedChar = (maximumGroupWord, maxGrou
     -- Find the word
     maximumGroupWord = allPossibilities !! maxIndex
 
-processUserInput :: [String] -> String -> Int -> Bool -> Char -> IO ()
-processUserInput dictionary currentWord guesses debug letter = do
-    let (nextWord, nextGroup) = cheatAtHangman dictionary currentWord letter
+processUserInput :: [String] -> String -> [Char] -> Int -> Bool -> Char -> IO ()
+processUserInput dictionary currentWord usedChars guesses debug letter = do
+    let (nextWord, nextGroup) = cheatAtHangman dictionary usedChars currentWord letter
     if elem '_' nextWord then
         return ()
     else do
         putStrLn $ "You solved it! The word is: " ++ nextWord
         exitSuccess
     
+    if nextWord == currentWord then
+        putStrLn "Wrong guess!"
+    else
+        putStrLn "Correct guess!"
+
     let nextGuesses = do
         if nextWord == currentWord then
             guesses - 1
@@ -120,9 +142,11 @@ processUserInput dictionary currentWord guesses debug letter = do
         return ()
     
     putStrLn "Your next input is?"
+    putStrLn $ "Current used chars are: " ++ (letter : usedChars)
     nextChar <- getLine
+    putStrLn ""
 
-    processUserInput dictionary nextWord nextGuesses debug (nextChar !! 0)
+    processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug (nextChar !! 0)
 
 initializeWord :: Int -> String
 initializeWord a
@@ -180,6 +204,6 @@ main = do
     putStrLn $ "The word is: " ++ startWord
     putStrLn "what is your first guess?"
     guessedChar <- getLine
-    processUserInput dictionaryList startWord guesses debug (guessedChar !! 0)
+    processUserInput dictionaryList startWord "" guesses debug (guessedChar !! 0)
 
     putStrLn "Done"
