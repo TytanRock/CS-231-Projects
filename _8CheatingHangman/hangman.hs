@@ -108,44 +108,54 @@ cheatAtHangman dictionary usedChars currentWord specifiedChar = (maximumGroupWor
 
 processUserInput :: [String] -> String -> [Char] -> Int -> Bool -> Char -> IO ()
 processUserInput dictionary currentWord usedChars guesses debug letter = do
+    -- Call the cheat function and get the next word and size of group
     let (nextWord, nextGroup) = cheatAtHangman dictionary usedChars currentWord letter
+
+    -- Check if word is finished
     if elem '_' nextWord then
         return ()
     else do
         putStrLn $ "You solved it! The word is: " ++ nextWord
         exitSuccess
     
+    -- Check for right/wrong guesses
     if nextWord == currentWord then
         putStrLn "Wrong guess!"
     else
         putStrLn "Correct guess!"
 
+    -- Update the guess count
     let nextGuesses = do
         if nextWord == currentWord then
             guesses - 1
         else
             guesses
     
+    -- Check for failure condition
     if nextGuesses == 0 then do
         putStrLn "You're out of guesses!"
         exitSuccess
     else
         return ()
     
+    -- Let user know what's been finished so far
     putStrLn $ "You have " ++ (show nextGuesses) ++ " guesses left"
 
     putStrLn $ "Current word is: " ++ nextWord
 
+    -- If debugging, print the words left in a group
     if debug then
         putStrLn $ "DEBUG: There are " ++ (show nextGroup) ++ " words left that fit"
     else
         return ()
     
-    putStrLn "Your next input is?"
+    -- Prompt user for next input and let them know what's been used
     putStrLn $ "Current used chars are: " ++ (letter : usedChars)
+    putStrLn "Your next input is?"
     nextChar <- getLine
     putStrLn ""
 
+    -- Do this again
     processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug (nextChar !! 0)
 
 initializeWord :: Int -> String
