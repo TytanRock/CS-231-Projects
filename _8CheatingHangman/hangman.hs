@@ -73,7 +73,8 @@ replaceAllChar (a:as) chr
 -- Find all patterns
 findPatterns :: String -> Char -> [String]
 findPatterns str chr
-    | elem '_' str = (findPatterns (replaceFirstChar str chr) chr) ++ (findPatterns (replaceFirstChar str '*') chr)
+    -- VERY IMPORTANT: The first findPatterns should use the wildcard char, that way we'll default to a wrong answer
+    | elem '_' str = (findPatterns (replaceFirstChar str '*') chr) ++ (findPatterns (replaceFirstChar str chr) chr)
     | otherwise = [str]
 
 {-
@@ -107,56 +108,69 @@ cheatAtHangman dictionary usedChars currentWord specifiedChar = (maximumGroupWor
     maximumGroupWord = allPossibilities !! maxIndex
 
 processUserInput :: [String] -> String -> [Char] -> Int -> Bool -> Char -> IO ()
-processUserInput dictionary currentWord usedChars guesses debug letter = do
-    -- Call the cheat function and get the next word and size of group
-    let (nextWord, nextGroup) = cheatAtHangman dictionary usedChars currentWord letter
+processUserInput dictionary currentWord usedChars guesses debug letter
+    | elem letter usedChars = do
+        putStrLn "You already guessed that! Try again"
 
-    -- Check if word is finished
-    if elem '_' nextWord then
-        return ()
-    else do
-        putStrLn $ "You solved it! The word is: " ++ nextWord
-        exitSuccess
-    
-    -- Check for right/wrong guesses
-    if nextWord == currentWord then
-        putStrLn "Wrong guess!"
-    else
-        putStrLn "Correct guess!"
+        -- Prompt user for next input and let them know what's been used
+        putStrLn $ "Current used chars are: " ++ (usedChars)
+        putStrLn "Your next input is?"
+        nextChar <- getLine
+        putStrLn ""
 
-    -- Update the guess count
-    let nextGuesses = do
+        -- Do this again
+        processUserInput dictionary currentWord (usedChars) guesses debug (nextChar !! 0)
+
+    | otherwise = do
+        -- Call the cheat function and get the next word and size of group
+        let (nextWord, nextGroup) = cheatAtHangman dictionary usedChars currentWord letter
+
+        -- Check if word is finished
+        if elem '_' nextWord then
+            return ()
+        else do
+            putStrLn $ "You solved it! The word is: " ++ nextWord
+            exitSuccess
+        
+        -- Check for right/wrong guesses
         if nextWord == currentWord then
-            guesses - 1
+            putStrLn "Wrong guess!"
         else
-            guesses
-    
-    -- Check for failure condition
-    if nextGuesses == 0 then do
-        putStrLn "You're out of guesses!"
-        exitSuccess
-    else
-        return ()
-    
-    -- Let user know what's been finished so far
-    putStrLn $ "You have " ++ (show nextGuesses) ++ " guesses left"
+            putStrLn "Correct guess!"
 
-    putStrLn $ "Current word is: " ++ nextWord
+        -- Update the guess count
+        let nextGuesses = do
+            if nextWord == currentWord then
+                guesses - 1
+            else
+                guesses
+        
+        -- Check for failure condition
+        if nextGuesses == 0 then do
+            putStrLn "You're out of guesses!"
+            exitSuccess
+        else
+            return ()
+        
+        -- Let user know what's been finished so far
+        putStrLn $ "You have " ++ (show nextGuesses) ++ " guesses left"
 
-    -- If debugging, print the words left in a group
-    if debug then
-        putStrLn $ "DEBUG: There are " ++ (show nextGroup) ++ " words left that fit"
-    else
-        return ()
-    
-    -- Prompt user for next input and let them know what's been used
-    putStrLn $ "Current used chars are: " ++ (letter : usedChars)
-    putStrLn "Your next input is?"
-    nextChar <- getLine
-    putStrLn ""
+        putStrLn $ "Current word is: " ++ nextWord
 
-    -- Do this again
-    processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug (nextChar !! 0)
+        -- If debugging, print the words left in a group
+        if debug then
+            putStrLn $ "DEBUG: There are " ++ (show nextGroup) ++ " words left that fit"
+        else
+            return ()
+        
+        -- Prompt user for next input and let them know what's been used
+        putStrLn $ "Current used chars are: " ++ (letter : usedChars)
+        putStrLn "Your next input is?"
+        nextChar <- getLine
+        putStrLn ""
+
+        -- Do this again
+        processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug (nextChar !! 0)
 
 initializeWord :: Int -> String
 initializeWord a
