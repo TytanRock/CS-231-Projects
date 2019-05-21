@@ -1,4 +1,5 @@
 module Main where
+import Art
 import Data.Char
 import Data.List
 import Data.Maybe
@@ -144,6 +145,9 @@ processUserInput dictionary currentWord usedChars guesses debug letter
                 guesses - 1
             else
                 guesses
+                
+        -- Print the current position of hangman
+        putStrLn $ getFail nextGuesses
         
         -- Check for failure condition
         if nextGuesses == 0 then do
