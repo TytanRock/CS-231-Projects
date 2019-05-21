@@ -120,7 +120,19 @@ processUserInput dictionary currentWord usedChars guesses debug letter
         putStrLn ""
 
         -- Do this again
-        processUserInput dictionary currentWord (usedChars) guesses debug (nextChar !! 0)
+        processUserInput dictionary currentWord (usedChars) guesses debug $ toUpper(nextChar !! 0)
+
+    | not $ isAlpha letter = do
+        putStrLn "This is not a letter, please specify a letter"
+
+        -- Prompt user for next input and let them know what's been used
+        putStrLn $ "Current used chars are: " ++ (usedChars)
+        putStrLn "Your next input is?"
+        nextChar <- getLine
+        putStrLn ""
+
+        -- Do this again
+        processUserInput dictionary currentWord (usedChars) guesses debug $ toUpper (nextChar !! 0)
 
     | otherwise = do
         -- Call the cheat function and get the next word and size of group
@@ -168,18 +180,24 @@ processUserInput dictionary currentWord usedChars guesses debug letter
             return ()
         
         -- Prompt user for next input and let them know what's been used
-        putStrLn $ "Current used chars are: " ++ (letter : usedChars)
+        putStrLn $ "Current used chars are: " ++ (sort (letter : usedChars))
         putStrLn "Your next input is?"
         nextChar <- getLine
         putStrLn ""
 
         -- Do this again
-        processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug (nextChar !! 0)
+        processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug $ toUpper (nextChar !! 0)
 
 initializeWord :: Int -> String
 initializeWord a
     | a == 0 = ""
     | otherwise = "_" ++ initializeWord (a - 1)
+
+removeWrongLength :: [String] -> Int -> [String]
+removeWrongLength [] _ = []
+removeWrongLength (a:as) specifiedLen
+    | length a == specifiedLen = [a] ++ (removeWrongLength as specifiedLen)
+    | otherwise = removeWrongLength as specifiedLen
 
 -- Main Program
 main = do
@@ -208,7 +226,7 @@ main = do
     dictionaryHandle <- openFile fileName ReadMode
     dictionaryWords <- hGetContents dictionaryHandle
     -- We're using the dictionary words as a list of words, so let's make a variable for it
-    let dictionaryList = words dictionaryWords
+    let dictionaryList = map (map toUpper) (words dictionaryWords)
 
     -- Check all words in dictionary to ensure there are words of correct length
     if elem wordLength $ map length dictionaryList  then
@@ -232,6 +250,6 @@ main = do
     putStrLn $ "The word is: " ++ startWord
     putStrLn "what is your first guess?"
     guessedChar <- getLine
-    processUserInput dictionaryList startWord "" guesses debug (guessedChar !! 0)
+    processUserInput (removeWrongLength dictionaryList wordLength) startWord "" guesses debug $ toUpper (guessedChar !! 0)
 
     putStrLn "Done"
