@@ -116,30 +116,6 @@ findWordWithPattern (dict:dicts) pattern charLess usedChars
 processUserInput :: [String] -> String -> [Char] -> Int -> Bool -> Char -> IO ()
 processUserInput dictionary currentWord usedChars guesses debug letter
     | elem letter usedChars = do
-        putStrLn "You already guessed that! Try again"
-
-        -- Prompt user for next input and let them know what's been used
-        putStrLn $ "Current used chars are: " ++ (usedChars)
-        putStrLn "Your next input is?"
-        nextChar <- getLine
-        putStrLn ""
-
-        -- Do this again
-        processUserInput dictionary currentWord (usedChars) guesses debug $ toUpper(nextChar !! 0)
-
-    | not $ isAlpha letter = do
-        putStrLn "This is not a letter, please specify a letter"
-
-        -- Prompt user for next input and let them know what's been used
-        putStrLn $ "Current used chars are: " ++ (usedChars)
-        putStrLn "Your next input is?"
-        nextChar <- getLine
-        putStrLn ""
-
-        -- Do this again
-        processUserInput dictionary currentWord (usedChars) guesses debug $ toUpper (nextChar !! 0)
-
-    | otherwise = do
         -- Call the cheat function and get the next word and size of group
         let (nextWord, nextGroup) = cheatAtHangman dictionary usedChars currentWord letter
 
@@ -187,17 +163,30 @@ processUserInput dictionary currentWord usedChars guesses debug letter
         
         -- Prompt user for next input and let them know what's been used
         putStrLn $ "Current used chars are: " ++ (sort (letter : usedChars))
-        putStrLn "Your next input is?"
-        nextChar <- getLine
-        putStrLn ""
+        nextChar <- getNextChar
 
         -- Do this again
-        processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug $ toUpper (nextChar !! 0)
+        processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug $ toUpper nextChar
 
 initializeWord :: Int -> String
 initializeWord a
     | a == 0 = ""
     | otherwise = "_" ++ initializeWord (a - 1)
+
+getNextChar :: IO Char
+getNextChar = do
+    putStrLn "What's your guess?"
+    userLine <- getLine
+    if null userLine then do
+        putStrLn "You didn't say anything"
+        getNextChar
+    else do
+        let userChar = head userLine
+        if not $ isAlpha userChar then do
+            putStrLn "This is not a letter"
+            getNextChar
+        else
+            return (userChar)
 
 removeWrongLength :: [String] -> Int -> [String]
 removeWrongLength [] _ = []
@@ -254,8 +243,7 @@ main = do
 
     let startWord = (initializeWord wordLength)
     putStrLn $ "The word is: " ++ startWord
-    putStrLn "what is your first guess?"
-    guessedChar <- getLine
-    processUserInput (removeWrongLength dictionaryList wordLength) startWord "" guesses debug $ toUpper (guessedChar !! 0)
+    guessedChar <- getNextChar
+    processUserInput (removeWrongLength dictionaryList wordLength) startWord "" guesses debug $ toUpper guessedChar
 
     putStrLn "Done"
