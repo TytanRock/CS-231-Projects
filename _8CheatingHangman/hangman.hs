@@ -108,6 +108,11 @@ cheatAtHangman dictionary usedChars currentWord specifiedChar = (maximumGroupWor
     -- Find the word
     maximumGroupWord = allPossibilities !! maxIndex
 
+findWordWithPattern :: [String] -> String -> Char -> [Char] -> String
+findWordWithPattern (dict:dicts) pattern charLess usedChars
+    | findSinglePattern dict pattern charLess usedChars > 0 = dict
+    | otherwise = findWordWithPattern dicts pattern charLess usedChars
+
 processUserInput :: [String] -> String -> [Char] -> Int -> Bool -> Char -> IO ()
 processUserInput dictionary currentWord usedChars guesses debug letter
     | elem letter usedChars = do
@@ -164,6 +169,7 @@ processUserInput dictionary currentWord usedChars guesses debug letter
         -- Check for failure condition
         if nextGuesses == 0 then do
             putStrLn "You're out of guesses!"
+            putStrLn $ "The word was: " ++ (findWordWithPattern dictionary currentWord letter usedChars)
             exitSuccess
         else
             return ()
