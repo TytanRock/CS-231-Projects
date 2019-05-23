@@ -53,6 +53,7 @@ findSinglePattern (dict:dicts) (ptrn:ptrns) charLess usedChars
     | dict == ptrn = findSinglePattern dicts ptrns charLess usedChars
     | otherwise = 0
 
+-- Returns total number of matches of a pattern in the dictionary
 findPatternMatches :: [String] -> String -> Char -> [Char] -> Int
 findPatternMatches [] _ _ _ = 0
 findPatternMatches (a:as) pattern charLess usedChars = 
@@ -65,6 +66,7 @@ replaceFirstChar (a:as) chr
     | a == '_' = chr : as
     | otherwise = a : replaceFirstChar as chr
 
+-- Replaces all '*'s with the specified char
 replaceAllChar :: String -> Char -> String
 replaceAllChar [] _ = ""
 replaceAllChar (a:as) chr
@@ -77,15 +79,6 @@ findPatterns str chr
     -- VERY IMPORTANT: The first findPatterns should use the wildcard char, that way we'll default to a wrong answer
     | elem '_' str = (findPatterns (replaceFirstChar str '*') chr) ++ (findPatterns (replaceFirstChar str chr) chr)
     | otherwise = [str]
-
-{-
-cleanPatterns :: [String] -> [Char] -> [String]
-cleanPatterns arr [] = arr
-cleanPatterns [] _ = []
-cleanPatterns (str:strs) chars
-    | ifExists str chars = cleanPatterns strs chars
-    | otherwise = str : (cleanPatterns strs chars)
--}
 
 ifExists :: String -> [Char] -> Bool
 ifExists _ [] = False
@@ -108,14 +101,15 @@ cheatAtHangman dictionary usedChars currentWord specifiedChar = (maximumGroupWor
     -- Find the word
     maximumGroupWord = allPossibilities !! maxIndex
 
+-- Finds a word that matches the pattern
 findWordWithPattern :: [String] -> String -> Char -> [Char] -> String
 findWordWithPattern (dict:dicts) pattern charLess usedChars
     | findSinglePattern dict pattern charLess usedChars > 0 = dict
     | otherwise = findWordWithPattern dicts pattern charLess usedChars
 
+-- Processes the user input when playing hangman
 processUserInput :: [String] -> String -> [Char] -> Int -> Bool -> Char -> IO ()
-processUserInput dictionary currentWord usedChars guesses debug letter
-    | elem letter usedChars = do
+processUserInput dictionary currentWord usedChars guesses debug letter = do
         -- Call the cheat function and get the next word and size of group
         let (nextWord, nextGroup) = cheatAtHangman dictionary usedChars currentWord letter
 
@@ -163,31 +157,38 @@ processUserInput dictionary currentWord usedChars guesses debug letter
         
         -- Prompt user for next input and let them know what's been used
         putStrLn $ "Current used chars are: " ++ (sort (letter : usedChars))
-        nextChar <- getNextChar
+        nextChar <- getNextChar (letter : usedChars)
 
         -- Do this again
         processUserInput dictionary nextWord (letter : usedChars) nextGuesses debug $ toUpper nextChar
 
+-- Initializes a word given the word length
 initializeWord :: Int -> String
 initializeWord a
     | a == 0 = ""
     | otherwise = "_" ++ initializeWord (a - 1)
 
-getNextChar :: IO Char
-getNextChar = do
+-- Gets the user's next guess
+getNextChar :: [Char] -> IO Char
+getNextChar usedChars = do
     putStrLn "What's your guess?"
     userLine <- getLine
     if null userLine then do
         putStrLn "You didn't say anything"
-        getNextChar
+        getNextChar usedChars
     else do
         let userChar = head userLine
         if not $ isAlpha userChar then do
             putStrLn "This is not a letter"
-            getNextChar
-        else
-            return (userChar)
+            getNextChar usedChars
+        else do
+            if elem (toUpper userChar) usedChars then do
+                putStrLn "You already used this letter"
+                getNextChar usedChars
+            else
+                return (userChar)
 
+-- Removes all words of incorrect word length
 removeWrongLength :: [String] -> Int -> [String]
 removeWrongLength [] _ = []
 removeWrongLength (a:as) specifiedLen
@@ -243,7 +244,7 @@ main = do
 
     let startWord = (initializeWord wordLength)
     putStrLn $ "The word is: " ++ startWord
-    guessedChar <- getNextChar
+    guessedChar <- getNextChar ""
     processUserInput (removeWrongLength dictionaryList wordLength) startWord "" guesses debug $ toUpper guessedChar
 
     putStrLn "Done"
