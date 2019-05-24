@@ -3,6 +3,7 @@ import Data.Char
 import Data.List
 import System.Environment
 import System.IO
+import System.Exit
 
 -- Split the string based on non-alphabetic characters
 getWords :: String -> [String]
@@ -48,10 +49,19 @@ checkSpelling (str:strs) dic
     | elem (map toLower str) (map (map toLower) dic) = (str ++ ":\tcorrect") : checkSpelling strs dic
     | otherwise = (str ++ ":\tnot correct") : checkSpelling strs dic
 
+checkArgs :: [String] -> IO [String]
+checkArgs args 
+    | length args < 3 = do
+        putStrLn "Not enough arguments. Usage: spellCheck <Dictionary> <Infile> <Outfile>"
+        exitFailure
+        return (["", "", ""])
+    | otherwise = return ([args !! 0, args !! 1, args !! 2])
+
 -- Main program
 main = do
     -- Get the filenames for each file
-    [dictionaryFile, inFile, outFile] <- getArgs
+    arguments <- getArgs
+    [dictionaryFile, inFile, outFile] <- checkArgs arguments
     dictionaryHandle <- openFile dictionaryFile ReadMode -- Open file in read mode
     inFileHandle <- openFile inFile ReadMode -- Open file in read mode
     outFileHandle <- openFile outFile WriteMode -- Open file in write mode
