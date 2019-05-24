@@ -49,6 +49,7 @@ checkSpelling (str:strs) dic
     | elem (map toLower str) (map (map toLower) dic) = (str ++ ":\tcorrect") : checkSpelling strs dic
     | otherwise = (str ++ ":\tnot correct") : checkSpelling strs dic
 
+-- Check the arguments to ensure they're correct
 checkArgs :: [String] -> IO [String]
 checkArgs args 
     | length args < 3 = do
