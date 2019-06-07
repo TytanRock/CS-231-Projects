@@ -147,7 +147,7 @@ processUserInput dictionary currentWord usedChars guesses debug letter = do
         -- Let user know what's been finished so far
         putStrLn $ "You have " ++ (show nextGuesses) ++ " guesses left"
 
-        putStrLn $ "Current word is: " ++ nextWord
+        putStrLn $ "Current word is: " ++ (breakWord nextWord)
 
         -- If debugging, print the words left in a group
         if debug then
@@ -156,7 +156,7 @@ processUserInput dictionary currentWord usedChars guesses debug letter = do
             return ()
         
         -- Prompt user for next input and let them know what's been used
-        putStrLn $ "Current used chars are: " ++ (sort (letter : usedChars))
+        putStrLn $ "Current used chars are: " ++ (fillBlanks (sort (letter : usedChars)) 'A')
         nextChar <- getNextChar (letter : usedChars)
 
         -- Do this again
@@ -167,6 +167,19 @@ initializeWord :: Int -> String
 initializeWord a
     | a == 0 = ""
     | otherwise = "_" ++ initializeWord (a - 1)
+
+-- Breaks up the characters in a word
+breakWord :: String -> String
+breakWord [] = []
+breakWord (a:as) = [a] ++ [' '] ++ (breakWord as)
+
+-- Fills missing characters with blanks
+fillBlanks :: String -> Char -> String
+fillBlanks [] _ = []
+fillBlanks (a:as) c 
+    | a == c && as == [] = [a, ' '] ++ (breakWord (replicate (ord 'Z' - ord c) '_'))
+    | a == c = [a, ' '] ++ (fillBlanks as (chr (1 + (ord c))))
+    | otherwise = ['_', ' '] ++ (fillBlanks (a:as) (chr (1 + (ord c))))
 
 -- Gets the user's next guess
 getNextChar :: [Char] -> IO Char
@@ -243,7 +256,7 @@ main = do
         return ()
 
     let startWord = (initializeWord wordLength)
-    putStrLn $ "The word is: " ++ startWord
+    putStrLn $ "The word is: " ++ (breakWord startWord)
     guessedChar <- getNextChar ""
     processUserInput (removeWrongLength dictionaryList wordLength) startWord "" guesses debug $ toUpper guessedChar
 
